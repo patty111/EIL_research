@@ -8,7 +8,7 @@ const TARGET_ABI = ["function receiveMessage(bytes32 msgId, bytes calldata paylo
 async function main() {
     // 1. 初始化 OP 鏈 (source) 的 Adapter
     const sourceAdapter = new EvmAdapter(
-        process.env.OP_RPC_URL,
+        process.env.OP_SEPOLIA_RPC_URL,
         process.env.PRIVATE_KEY,
         process.env.SOURCE_CONTRACT_ADDRESS,
         SOURCE_ABI
@@ -16,7 +16,7 @@ async function main() {
 
     // 2. 初始化 ARB 鏈 (target) 的 Adapter
     const targetAdapter = new EvmAdapter(
-        process.env.ARB_RPC_URL,
+        process.env.ARB_SEPOLIA_RPC_URL,
         process.env.PRIVATE_KEY,
         process.env.TARGET_CONTRACT_ADDRESS,
         TARGET_ABI

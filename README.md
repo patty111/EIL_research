@@ -40,3 +40,19 @@
     *   `VoucherRequest` (Pending)
     *   `VoucherIssued` (Success/Bridged)
     *   `Latency` (Time between Request block and Issued block)
+*   
+
+### How to Run the Current Thing
+1. Start the relayer:
+
+```shell
+$ cd eil-poc-relayer
+$ node index.js
+```
+2. Trigger the cross-chain action:
+
+```shell
+$ cd eil-poc-contracts
+$ source .env
+$ cast send 0x525f430483d8e5dbf82C6704410aB8c3e88EF240 "sendMessage(bytes)" 0x1234 --rpc-url $OP_SEPOLIA_RPC_URL --private-key $PRIVATE_KEY
+```
