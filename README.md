@@ -1,7 +1,6 @@
 # EIL SDK Research & Implementation Plan
 
 ## 1. Core Concept Shift: Intents vs. Messages
-You are used to "Message Passing" bridges (LayerZero, Axelar):
 *   *Paradigm*: "Send bytes from Chain A to Chain B".
 *   *Security*: Relayer + Oracle / Light Client.
 
@@ -10,7 +9,7 @@ You are used to "Message Passing" bridges (LayerZero, Axelar):
 *   *Mechanism*: **Vouchers**. You lock funds/emit event on Chain A -> XLP (Liquidity Provider/Notary) signs a Voucher -> You use that Voucher to pay for gas/execution on Chain B.
 *   *Security*: The **XLP** is the trusted party (can be federated). The **Smart Account** (Safe, Kernel) provides the M-of-N user security.
 
-## 2. Architecture for your Requirements
+## 2. Architecture
 
 ### Requirement A: Message Cross-chain (Event A -> Call B)
 *   **Solution**: Use `CrossChainExecutor` (EIL SDK).
@@ -24,7 +23,7 @@ You are used to "Message Passing" bridges (LayerZero, Axelar):
 *   **Adapter**: In EIL, the "Adapter" is the **AtomicSwapPaymaster**. You deploy this *once* (same bytecode) on all supported chains. It handles the verification of XLP signatures.
 
 ### Requirement C: Relayer M-of-N
-*   **Interpretation**: You want the entity moving the message to be secure/distributed.
+*   **Interpretation**: Entity moving the message to be secure/distributed.
 *   **EIL Mapping**: 
     1.  **The User (Source of Truth)**: Use a **Gnosis Safe** (M-of-N) as your Smart Account identity on both chains. EIL supports `Ambire` and `Kernel`, and can support `Safe` via adapters.
     2.  **The Intermediary (XLP)**: Typically a high-availability bot. To make this M-of-N:
@@ -41,14 +40,3 @@ You are used to "Message Passing" bridges (LayerZero, Axelar):
     *   `VoucherRequest` (Pending)
     *   `VoucherIssued` (Success/Bridged)
     *   `Latency` (Time between Request block and Issued block)
-
-## 3. Implementation Steps
-1.  **Clone EIL SDK**: `git clone https://github.com/eth-infinitism/eil-sdk.git` (Use this local library).
-2.  **Configuration**: Define `ChainInfo` for your 2 EVM chains (RPCs, Paymaster addresses).
-3.  **Orchestrator Script**: Write a script using `CrossChainBuilder` to construct the A->B intent.
-4.  **Dashboard**: A listener script for metrics.
-
-## 4. Folder Structure
-*   `src/config.ts`: Chain & Account setup.
-*   `src/orchestrator.ts`: The main state machine runner.
-*   `src/dashboard.ts`: Observability tool.
