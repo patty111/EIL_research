@@ -1,0 +1,27 @@
+services:
+  anvil-arbitrum:
+    image: ghcr.io/foundry-rs/foundry:stable
+    command:
+      [
+        'exec anvil --quiet --disable-code-size-limit --port 8501 --host 0.0.0.0 --chain-id 42161 --gas-limit 30000000 --accounts 10',
+      ]
+    ports:
+      - '8501:8501'
+    networks:
+      - eil-network-demo
+
+  anvil-optimism:
+    image: ghcr.io/foundry-rs/foundry:stable
+    command:
+      [
+        'exec anvil --quiet --disable-code-size-limit --port 8503 --host 0.0.0.0 --chain-id 10 --gas-limit 30000000 --accounts 10',
+      ]
+    ports:
+      - '8503:8503'
+    networks:
+      - eil-network-demo
+
+networks:
+  eil-network-demo:
+    name: eil-network-demo
+    driver: bridge

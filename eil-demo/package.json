@@ -1,0 +1,28 @@
+{
+  "name": "eil-demo",
+  "version": "1.0.0",
+  "description": "EIL Playground demo with 2 sidechains (Arbitrum + Optimism)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "chains:start": "docker compose -f docker/chains/docker-compose.yml up -d",
+    "chains:stop": "docker compose -f docker/chains/docker-compose.yml down",
+    "contracts:deploy": "docker compose --env-file .env -f docker/contracts/docker-compose.yml up",
+    "contracts:clean": "docker compose -f docker/contracts/docker-compose.yml down",
+    "services:start": "docker compose --env-file .env -f docker/services/docker-compose.yml up -d",
+    "services:stop": "docker compose -f docker/services/docker-compose.yml down",
+    "services:logs": "docker compose -f docker/services/docker-compose.yml logs -f",
+    "system:stop": "yarn services:stop && yarn contracts:clean && yarn chains:stop"
+  },
+  "dependencies": {
+    "@eil-protocol/accounts": "^0.1.2",
+    "@eil-protocol/sdk": "^0.1.2",
+    "dotenv": "^17.2.3",
+    "viem": "^2.42.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.15.7",
+    "typescript": "^5.6.3"
+  }
+}
