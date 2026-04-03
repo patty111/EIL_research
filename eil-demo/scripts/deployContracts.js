@@ -1,11 +1,8 @@
 /**
  * Deployment script for EIL Demo - 2 Chain Version (Arbitrum + Optimism)
- *
- * This is an adapted version of eil-playground/scripts/deployContracts.js
- * configured for 2 chains only (no mainnet, no Base).
- *
- * Key changes from original:
- * - Removed Ethereum (L1) deployment logic
+ * 
+ * configured for 2 chains only 
+* - Removed Ethereum (L1) deployment logic
  * - Reduced to Arbitrum (42161) + Optimism (10)
  * - Uses only mock bridges for simplicity
  * - Simplified URL configuration (ARB_RPC, OP_RPC)
