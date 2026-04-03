@@ -3,9 +3,7 @@
  *
  * This file runs a mock bundler for EIL SDK account abstraction testing.
  *
- * Key differences from chain-abstraction bundler:
  * - Uses @eil-protocol/contracts artifacts via contractArtifacts.js
- * - Uses SimpleAccountFactory instead of CrossLayerAccountFactory for error decoding
  * - Compatible with EIL SDK's expected EntryPoint
  */
 
