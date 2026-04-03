@@ -2,6 +2,118 @@
 
 
 ## How It Works
+### Ideal EIL Flow Simplified
+## Story Background
+
+- Alice wants to move 100 usdc from Op to Arb
+- A XLP (Cross Chain Liquidity Provider) holds money on both chains, wants to earn fees
+- CrossChainPaymaster (CCPM), a ==Smart Contract== that is deployed on both chains, handling fund locks and voucher redeems
+- L1 Stake Manager, a contract on Mainnet, handles disputes
+
+## Story Begins
+
+### Preperation
+
+XLP needs to do this first:
+1. goes to Stake Manager → deposits some money (e.g. 5 ETH) and says: “I promise  to be a good guy, if it don’t, slash my deposit.”
+2. L1 lets the XLP to register on both Op & Arb, telling the 2 CCPM
+3. XLP deposits Liquidity to each chain’s CCPM
+
+→ Op 500 USDC
+
+→ Arb 500 USDC
+1. XLP watches Specific Events on both chains (Voucher Request)
+
+### Here Comes the Customer
+
+1. Alice wants to move 100 usdc from Op to Arb
+2. Building UserOp on Op (Source Chain)
+- Locks 100 usdc in CCPM, gets a voucher for Arb
+1. Bulding UserOp on Arb (Dest Chain)
+- use voucher to receive 100 usdc and follow my following orders
+1. Hashes both UserOps
+2. Put both hashes into a Merkle Tree
+
+[Hash OP, Hash Arb]
+
+            ↓
+
+Merkle Root
+1. Sign the Merkle Root ONCE
+2. Atttach to UserOp
+
+UserOp.signature = {the signature, merkle root, merkle proof}
+
+This all happened in Alice’s Wallet, nothing on chain.
+
+### Alice Submits Op UserOp
+
+Alice → Op Bundler → EntryPoint → Alice’s Smart Account → CCPM
+- → Why send to a bundler first then to an EntryPoint? What does these do?
+
+→ A smart account (4337) is a `smart contract` account wallet, since it is a smart contract, you can only interact with it via a contract call. But who calls it?
+
+→ The Bundler is someone who actually uses their computer running a program that watches for UserOps and submits real tx on your behalf
+
+→ If the Bundler can call the Smart Account directly then every wallet would have different rules. Then the Bundler would need to custom code for every different wallet type. An Entrypoint is a Standard for 
+
+B undler < - > Smart Account Call
+
+CCPM Locks 100 usdc from Alice, and emits Voucher Request Event
+
+### XLP Races to Claim
+
+XLP’s are monitoring Op chain for VoucherRequest Events, and bids for the Request
+- Note A smart XLP that also runs a **bundler** can bundle Alice's UserOp AND their own claim-voucher transaction into the same block — meaning they earn the fee before any other XLP even sees the event. That's why the most XLPs will run bundlers.
+
+When a XLP decides to claim:
+
+```
+XLP → Optimism CCPM: "I claim this request. Here's my signed voucher."
+
+The voucher is a signed message:
+"I, XLP, promise to release 100 USDC to Alice on Arbitrum"
+Signed by XLP's key.
+
+CCPM on Optimism:
+- Verifies XLP is registered and has enough deposited funds on Arbitrum
+- Locks Alice's 100 USDC for 1 HOUR (not released to XLP yet)
+- Stores: "XLP claimed this, voucher = [signed thing]"
+```
+
+The user fund is still locked, only a voucher is issued
+
+### Alice Gets the Voucher and Submits on Arb
+
+Alice's wallet is watching for the `VoucherIssued` event on Optimism:
+
+```
+Wallet sees: "XLP issued voucher for my request!"
+
+Wallet does:
+  1. Takes the voucher (XLP's signed message)
+  2. Appends it to the Arbitrum UserOp signature
+     UserOp.sig = { merkle sig, merkle proof, voucher }
+  3. Submits to Arbitrum bundler
+```
+
+On Arbitrum:
+
+```
+Arbitrum Bundler → EntryPoint → Alice's Smart Account → Arbitrum CCPM
+
+Arbitrum CCPM checks:
+  1. Is this voucher signed by a registered XLP? ✅
+  2. Does that XLP have enough USDC deposited here? ✅
+  3. Is the voucher still valid (not expired)? ✅
+
+Then:
+  - Pays gas from XLP's Arbitrum deposit (XLP fronts gas too!)
+  - Releases 100 USDC to Alice's smart account
+  - Alice's calldata executes (transfer, swap, mint NFT, whatever)
+```
+
+### XLP Gets Reimbursed (1 Hour Later, Optimistic approach)
 
 ### Current Status
 
@@ -53,6 +165,8 @@ Operation completed! Checking final balances...
    Final Balance on Optimism: 0.3 USDC
 ```
 
+![alt text](image.png)
+
 ### Main Contracts Deployment Overview
 | Contract | Purpose | Deployed On |
 |----------|---------|-------------|
@@ -78,4 +192,6 @@ Operation completed! Checking final balances...
 
 
 
-參考資料: https://hackmd.io/@1XHOvXHsQ76QF9ptlCibYQ/Bkz_EqKybl
+參考資料: 
+1. https://hackmd.io/@1XHOvXHsQ76QF9ptlCibYQ/Bkz_EqKybl
+2. https://github.com/eth-infinitism/eil-sdk
