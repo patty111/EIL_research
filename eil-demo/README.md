@@ -164,8 +164,7 @@ Operation completed! Checking final balances...
    Final Balance on Arbitrum: 19999.7 USDC
    Final Balance on Optimism: 0.3 USDC
 ```
-
-![alt text](image.png)
+![alt text](<Merkle Proof Release-2026-04-05-073728.svg>)
 
 ### Main Contracts Deployment Overview
 | Contract | Purpose | Deployed On |
